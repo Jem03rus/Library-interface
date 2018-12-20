@@ -75,12 +75,13 @@ namespace DataBaseLibrary
 
         public DataTable CrateTAnle()
         {
-            SqlCommand command = new SqlCommand("SELECT BookName FROM Book INNER JOIN IssueOfBooks ON Book.BookID = IssueOfBooks.BookID", connection);
+            DataTable IssueTable = new DataTable();
+            SqlCommand command = new SqlCommand( "SELECT Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name FROM IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ", connection);
             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
-                adapter.Fill(rowValueByID);
+                adapter.Fill(IssueTable);
             }
-            return rowValueByID;
+            return IssueTable;
         }
     }
 }

@@ -25,16 +25,47 @@ namespace DataBaseLibrary
 
         private void SaveBookButton_Click(object sender, RoutedEventArgs e)
         {
-            if ((GenreComboBox.Text == "") || (AuthorComboBox.Text == "") || (BookNameTextBox.Text == ""))
+            if ((BookNameTextBox.Text == "") || (AuthorTextBox.Visibility == Visibility.Visible && AuthorTextBox.Text == "") || (GenreTextBox.Visibility == Visibility.Visible && GenreTextBox.Text == "") || (AuthorComboBox.Visibility == Visibility.Visible && GenreComboBox.Text == "" || GenreComboBox.Visibility == Visibility.Visible && AuthorComboBox.Text == ""))
             {
-                MessageBox.Show("Incorrect input");
+                MessageBox.Show("Incorrect input", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
-                var GenreID = sqlclass.GetID(GenreComboBox.Text, "Genre", "Genre", SQLWorker.connection);
-                var AuthorID = sqlclass.GetID(AuthorComboBox.Text, "Author", "Author", SQLWorker.connection);
-                string id = Guid.NewGuid().ToString().Trim();
-                SQLWorker.Insert("'" + id + "', '" + AuthorID + "', '" + GenreID + "', '" + BookNameTextBox.Text + "'", "Book");
+                string bookID = Guid.NewGuid().ToString();
+                string authorValue = "";
+                string genreValue = "";
+
+                if (AuthorTextBox.Visibility == Visibility.Visible)
+                {
+                    string authorGuid = Guid.NewGuid().ToString().Trim();
+                    SQLWorker.Insert("'" + authorGuid + "', '" + AuthorTextBox.Text + "'", "Author");
+                    authorValue = AuthorTextBox.Text;
+                }
+                else
+                {
+                    authorValue = AuthorComboBox.Text;
+                }
+                if (GenreTextBox.Visibility == Visibility.Visible)
+                {
+                    string genreGuid = Guid.NewGuid().ToString().Trim();
+                    SQLWorker.Insert("'" + genreGuid + "', '" + GenreTextBox.Text + "'", "Genre");
+                    genreValue = GenreTextBox.Text;
+                }
+                else
+                {
+                    genreValue = GenreComboBox.Text;
+                }
+
+                var GenreID = sqlclass.GetID(genreValue, "Genre", "Genre", SQLWorker.connection);
+                var AuthorID = sqlclass.GetID(authorValue, "Author", "Author", SQLWorker.connection);
+
+
+
+                SQLWorker.Insert("'" + bookID + "', '" + AuthorID + "', '" + GenreID + "', '" + BookNameTextBox.Text + "'", "Book");
+                MessageBox.Show("Data successfully saved", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                ComboBoxConnection("Author");
+                ComboBoxConnection("Genre");
+                ComboBoxConnection("Book");
             }
         }
 
@@ -42,7 +73,7 @@ namespace DataBaseLibrary
         {
             if ((ReturnDAteDatePicker.Text == "") || (DateOfIssueDatePicker.Text == "") || (ReaderNameComboBox.Text == "") || (BookComboBox.Text == ""))
             {
-                MessageBox.Show("Incorrect input");
+                MessageBox.Show("Incorrect input", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
@@ -50,6 +81,7 @@ namespace DataBaseLibrary
                 var ReaderID = sqlclass.GetID(ReaderNameComboBox.Text, "Reader", "ReaderName", SQLWorker.connection);
                 string id = Guid.NewGuid().ToString().Trim();
                 SQLWorker.Insert("'" + id + "', '" + ReaderID + "', '" + DateOfIssueDatePicker.Text + "', '" + ReturnDAteDatePicker.Text + "', '" + BookID + "'", "IssueOfBooks");
+                MessageBox.Show("Data successfully saved", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -69,6 +101,7 @@ namespace DataBaseLibrary
                 string id = Guid.NewGuid().ToString().Trim();
                 SQLWorker.Insert("'" + id + "', '" + ReaderNameTextBox.Text + "', '" + AdressTextBox.Text + "', '" + EmailTextBox.Text + "', " + PhoneNumberTextBox.Text, "Reader");
                 MessageBox.Show("Data successfully saved", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                ComboBoxConnection("Reader");
             }
         }
 
@@ -79,9 +112,11 @@ namespace DataBaseLibrary
             ComboBoxConnection("Book");
             ComboBoxConnection("Reader");
 
+            ReaderTableGrid.ItemsSource = SQLWorker.Select("ReaderName, Adress, Email, PhoneNumber","Reader").DefaultView;
+            IssueOfBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
+            IssueBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
+            AddBookDataGrid.ItemsSource = SQLWorker.Select("Name, Author.Author, Genre.Genre","Book INNER JOIN Author ON Book.AuthorID = Author.AuthorID INNER JOIN Genre ON Book.GenreID = Genre.GenreID").DefaultView;
 
-            var sss = SQLWorker.CrateTAnle();
-            IssueOfBookDataGrid.ItemsSource = sss.DefaultView;
         }
 
 
@@ -119,18 +154,36 @@ namespace DataBaseLibrary
         {
             AddReader.Visibility = Visibility.Hidden;
             IssueBookTable.Visibility = Visibility.Visible;
+            ReaderNameTextBox.Text = "";
+            AdressTextBox.Text = "";
+            EmailTextBox.Text = "";
+            PhoneNumberTextBox.Text = "";
         }
 
         private void IssueBookBackButton_Click(object sender, RoutedEventArgs e)
         {
             IssueBook.Visibility = Visibility.Hidden;
             IssueBookTable.Visibility = Visibility.Visible;
+            ReaderNameComboBox.Text = "";
+            DateOfIssueDatePicker.Text = "";
+            ReturnDAteDatePicker.Text = "";
+            BookComboBox.Text = "";
         }
+    
 
-        private void InsertBookBackButton_Click(object sender, RoutedEventArgs e)
+        private void AddBookBackButton_Click(object sender, RoutedEventArgs e)
         {
             IssueBookTable.Visibility = Visibility.Visible;
             AddBook.Visibility = Visibility.Hidden;
+            BookNameTextBox.Clear();
+            AuthorTextBox.Clear();
+            AuthorComboBox.Text = "";
+            GenreTextBox.Clear();
+            GenreComboBox.Text = "";
+            AuthorTextBox.Visibility = Visibility.Hidden;
+            AuthorComboBox.Visibility = Visibility.Visible;
+            GenreTextBox.Visibility = Visibility.Hidden;
+            GenreComboBox.Visibility = Visibility.Visible;
         }
 
         private void AddBook_Click(object sender, RoutedEventArgs e)
@@ -151,5 +204,38 @@ namespace DataBaseLibrary
             AddReader.Visibility = Visibility.Visible;
         }
 
+        private void AddGenreButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (GenreComboBox.Visibility == Visibility.Visible)
+            {
+                GenreComboBox.Visibility = Visibility.Hidden;
+                GenreTextBox.Visibility = Visibility.Visible;
+                AddOrChooseGenre.ToolTip = "Chooose genre";
+            }
+            else if (GenreComboBox.Visibility == Visibility.Hidden)
+            {
+                GenreTextBox.Visibility = Visibility.Hidden;
+                GenreComboBox.Visibility = Visibility.Visible;
+                AddOrChooseGenre.ToolTip = "Add genre";
+            }
+
+        }
+
+        private void AddAuthorButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (AuthorComboBox.Visibility == Visibility.Visible)
+            {
+                AuthorComboBox.Visibility = Visibility.Hidden;
+                AuthorTextBox.Visibility = Visibility.Visible;
+                AddOrChooseAuthor.ToolTip = "Chooose author";
+            }
+            else if (AuthorComboBox.Visibility == Visibility.Hidden)
+            {
+                AuthorComboBox.Visibility = Visibility.Visible;
+                AuthorTextBox.Visibility = Visibility.Hidden;
+                AddOrChooseAuthor.ToolTip = "Add author";
+            }
+
+        }
     }
 }
