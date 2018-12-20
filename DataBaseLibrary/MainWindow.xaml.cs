@@ -12,206 +12,144 @@ namespace DataBaseLibrary
     /// </summary>
     public partial class MainWindow : Window
     {
-        string procedureName;
-        string connectionName;
         string connectionString;
-        SqlDataAdapter adapter;
-        DataTable libraryTable;
+        sqlclass SQLWorker;
 
         public MainWindow()
         {
+            SQLWorker = new sqlclass();
             InitializeComponent();
             connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            SQLWorker.Connect(connectionString);
         }
 
-
-        private void NewMethod(string Name)
+        private void SaveBookButton_Click(object sender, RoutedEventArgs e)
         {
-            string sql = "SELECT * FROM " + Name;
-            libraryTable = new DataTable();
-            SqlConnection connection = null;
-            try
+            if ((GenreComboBox.Text == "") || (AuthorComboBox.Text == "") || (BookNameTextBox.Text == ""))
             {
-                connection = new SqlConnection(connectionString);
-                SqlCommand command = new SqlCommand(sql, connection);
-                adapter = new SqlDataAdapter(command);
-
-                adapter.InsertCommand = new SqlCommand("sp_" + Name, connection);
-                adapter.InsertCommand.CommandType = CommandType.StoredProcedure;
-                if (procedureName == "BookName")
-                {
-                    //  adapter.InsertCommand.Parameters.Add();
-                    //  SqlParameter parameter = adapter.InsertCommand.Parameters.Add(qq.Text);
-                    using (command = new SqlCommand("INSERT INTO " + Name + " VALUES(@Author, @AuthorID, @BookID)", connection))
-                    {
-                        command.Parameters.Add(new SqlParameter("Author", AuthorTextBox.Text));
-                    }
-                }
-                else if (procedureName == "Author")
-                {
-                    adapter.InsertCommand.Parameters.Add("@Author", SqlDbType.VarChar, 50, "Author");
-                    SqlParameter parameter = adapter.InsertCommand.Parameters.Add("@BookID", SqlDbType.Int, 0, "BookID");
-                    parameter.Direction = ParameterDirection.Output;
-                }
-                else if (procedureName == "Genre")
-                {
-                    adapter.InsertCommand.Parameters.Add("@Genre", SqlDbType.VarChar, 50, "Genre");
-                    SqlParameter parameter = adapter.InsertCommand.Parameters.Add("@BookID", SqlDbType.Int, 0, "BookID");
-                    parameter.Direction = ParameterDirection.Output;
-                }
-                else if (procedureName == "ReaderInfo")
-                {
-                    adapter.InsertCommand.Parameters.Add("@Name", SqlDbType.VarChar, 50, "Name");
-                    adapter.InsertCommand.Parameters.Add("@Adress", SqlDbType.VarChar, 50, "Adress");
-                    SqlParameter parameter = adapter.InsertCommand.Parameters.Add("@ReaderID", SqlDbType.Int, 0, "BookID");
-                    parameter.Direction = ParameterDirection.Output;
-                }
-                else if (procedureName == "IssueOfBook")
-                {
-                    adapter.InsertCommand.Parameters.Add("@DateOfIssue", SqlDbType.VarChar, 50, "DateOfIssue");
-                    adapter.InsertCommand.Parameters.Add("@ReturnDate", SqlDbType.VarChar, 50, "ReturnDate");
-                    adapter.InsertCommand.Parameters.Add("@BookID", SqlDbType.Int, 0, "BookID");
-                    SqlParameter parameter = adapter.InsertCommand.Parameters.Add("@ReaderID", SqlDbType.Int, 0, "BookID");
-                    parameter.Direction = ParameterDirection.Output;
-                }
-
-                adapter.Fill(libraryTable);
-                LibraryGrid.ItemsSource = libraryTable.DefaultView;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                if (connection != null)
-                    connection.Close();
-            }
-        }
-
-        private void Button_Click_3(object sender, RoutedEventArgs e)
-        {
-            NewMethod(procedureName = "BookName");
-        }
-
-        private void Button_Click_4(object sender, RoutedEventArgs e)
-        {
-            NewMethod(procedureName = "Author");
-        }
-
-        private void Button_Click_5(object sender, RoutedEventArgs e)
-        {
-            NewMethod(procedureName = "Genre");
-        }
-
-        private void Button_Click_6(object sender, RoutedEventArgs e)
-        {
-            NewMethod(procedureName = "ReaderInfo");
-        }
-
-        private void Button_Click_7(object sender, RoutedEventArgs e)
-        {
-            NewMethod(procedureName = "IssueOfBook");
-        }
-
-
-
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            if (LibraryGrid.SelectedItems != null)
-            {
-                for (int i = 0; i < LibraryGrid.SelectedItems.Count; i++)
-                {
-                    DataRowView datarowView = LibraryGrid.SelectedItems[i] as DataRowView;
-                    if (datarowView != null)
-                    {
-                        DataRow dataRow = (DataRow)datarowView.Row;
-                        dataRow.Delete();
-                    }
-                }
-            }
-        }
-
-        private void Save_Click(object sender, RoutedEventArgs e)
-        {
-            SqlConnection connection = new SqlConnection(connectionString);
-
-            connection.Open();
-            try
-            {
-                using (SqlCommand command = new SqlCommand("INSERT * FROM BookName", connection))
-                {
-                    command.Parameters.Add(new SqlParameter("Name", BookNameTextBox.Text));
-                    command.Parameters.Add(new SqlParameter("BookID", 1));
-                    command.Parameters.Add(new SqlParameter("GenreID", 13));
-                    command.Parameters.Add(new SqlParameter("AuthorID", 2));
-                    command.ExecuteNonQuery();
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Count not insert.");
-            }
-        }
-
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            ComboBoxConnection(connectionName = "Author");
-            ComboBoxConnection(connectionName = "Genre");
-        }
-
-        private void ComboBoxConnection(string name)
-        {
-            SqlConnection connection = new SqlConnection(connectionString);
-
-            SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM " + name, connection);
-            DataSet ds = new DataSet();
-            da.Fill(ds, name);
-
-            if (connectionName == "Author")
-            {
-                AuthorComboBox.DisplayMemberPath = ds.Tables[0].Columns[name].ToString();
-                AuthorComboBox.ItemsSource = ds.Tables[0].DefaultView;
-            }
-            else if (connectionName == "Genre")
-            {
-                GenreComboBox.DisplayMemberPath = ds.Tables[0].Columns[name].ToString();
-                GenreComboBox.ItemsSource = ds.Tables[0].DefaultView;
-            }
-
-        }
-
-
-        private void UpdateDB()
-        {
-            SqlCommandBuilder comandbuilder = new SqlCommandBuilder(adapter);
-            adapter.Update(libraryTable);
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            UpdateDB();
-            MessageBox.Show("Данные сохранены");
-        }
-
-        private void AuthorButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (AuthorComboBox.Visibility == Visibility.Visible)
-            {
-                AuthorComboBox.Visibility = Visibility.Hidden;
-                AuthorTextBox.Visibility = Visibility.Visible;
+                MessageBox.Show("Incorrect input");
             }
             else
             {
-                AuthorComboBox.Visibility = Visibility.Visible;
-                AuthorTextBox.Visibility = Visibility.Hidden;
+                var GenreID = sqlclass.GetID(GenreComboBox.Text, "Genre", "Genre", SQLWorker.connection);
+                var AuthorID = sqlclass.GetID(AuthorComboBox.Text, "Author", "Author", SQLWorker.connection);
+                string id = Guid.NewGuid().ToString().Trim();
+                SQLWorker.Insert("'" + id + "', '" + AuthorID + "', '" + GenreID + "', '" + BookNameTextBox.Text + "'", "Book");
             }
         }
 
-        private void BookNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void SaveIssueBook_Click(object sender, RoutedEventArgs e)
         {
-
+            if ((ReturnDAteDatePicker.Text == "") || (DateOfIssueDatePicker.Text == "") || (ReaderNameComboBox.Text == "") || (BookComboBox.Text == ""))
+            {
+                MessageBox.Show("Incorrect input");
+            }
+            else
+            {
+                var BookID = sqlclass.GetID(BookComboBox.Text, "Book", "Name", SQLWorker.connection);
+                var ReaderID = sqlclass.GetID(ReaderNameComboBox.Text, "Reader", "ReaderName", SQLWorker.connection);
+                string id = Guid.NewGuid().ToString().Trim();
+                SQLWorker.Insert("'" + id + "', '" + ReaderID + "', '" + DateOfIssueDatePicker.Text + "', '" + ReturnDAteDatePicker.Text + "', '" + BookID + "'", "IssueOfBooks");
+            }
         }
+
+        private void SaveReader_Click(object sender, RoutedEventArgs e)
+        {
+            if (PhoneNumberTextBox.Text.Length != 11)
+            {
+                MessageBox.Show("Incorrect phone number entry", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else  if ((ReaderNameTextBox.Text == "") || (AdressTextBox.Text == "") || (EmailTextBox.Text == "") || (PhoneNumberTextBox.Text == ""))
+            {
+
+                MessageBox.Show("Incorrect input", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                string id = Guid.NewGuid().ToString().Trim();
+                SQLWorker.Insert("'" + id + "', '" + ReaderNameTextBox.Text + "', '" + AdressTextBox.Text + "', '" + EmailTextBox.Text + "', " + PhoneNumberTextBox.Text, "Reader");
+                MessageBox.Show("Data successfully saved", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ComboBoxConnection("Author");
+            ComboBoxConnection("Genre");
+            ComboBoxConnection("Book");
+            ComboBoxConnection("Reader");
+
+
+            var sss = SQLWorker.CrateTAnle();
+            IssueOfBookDataGrid.ItemsSource = sss.DefaultView;
+        }
+
+
+        private void ComboBoxConnection(string TableName)
+        {
+            var table = SQLWorker.Select("*", TableName);
+            if (TableName == "Author")
+            {
+                AuthorComboBox.ItemsSource = table.DefaultView;
+                AuthorComboBox.DisplayMemberPath = table.Columns["Author"].ToString();
+            }
+            else if (TableName == "Genre")
+            {
+                GenreComboBox.ItemsSource = table.DefaultView;
+                GenreComboBox.DisplayMemberPath = table.Columns["Genre"].ToString();
+            }
+            else if (TableName == "Book")
+            {
+                BookComboBox.ItemsSource = table.DefaultView;
+                BookComboBox.DisplayMemberPath = table.Columns["Name"].ToString();
+            }
+            else if (TableName == "Reader")
+            {
+                ReaderNameComboBox.ItemsSource = table.DefaultView;
+                ReaderNameComboBox.DisplayMemberPath = table.Columns["ReaderName"].ToString();
+            }
+        }
+
+        private void PhoneNumberTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = !(char.IsDigit(e.Text, 0));
+        }
+
+        private void AddReaderBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            AddReader.Visibility = Visibility.Hidden;
+            IssueBookTable.Visibility = Visibility.Visible;
+        }
+
+        private void IssueBookBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            IssueBook.Visibility = Visibility.Hidden;
+            IssueBookTable.Visibility = Visibility.Visible;
+        }
+
+        private void InsertBookBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            IssueBookTable.Visibility = Visibility.Visible;
+            AddBook.Visibility = Visibility.Hidden;
+        }
+
+        private void AddBook_Click(object sender, RoutedEventArgs e)
+        {
+            IssueBookTable.Visibility = Visibility.Hidden;
+            AddBook.Visibility = Visibility.Visible;
+        }
+
+        private void IssueBookMenu_Click(object sender, RoutedEventArgs e)
+        {
+            IssueBookTable.Visibility = Visibility.Hidden;
+            IssueBook.Visibility = Visibility.Visible;
+        }
+
+        private void AddReaderButton_Click(object sender, RoutedEventArgs e)
+        {
+            IssueBookTable.Visibility = Visibility.Hidden;
+            AddReader.Visibility = Visibility.Visible;
+        }
+
     }
 }
