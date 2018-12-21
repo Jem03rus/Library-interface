@@ -57,21 +57,18 @@ namespace DataBaseLibrary
             int number = command.ExecuteNonQuery();
         }
 
+
+
         public void Insert(string value, string table)
         {
             SqlCommand command = new SqlCommand("INSERT INTO " + table + " VALUES ("+ value +")", connection);
             command.ExecuteNonQuery();
         }
 
-        public DataTable CrateTAnle()
+        public void Update(string table, string values)
         {
-            DataTable IssueTable = new DataTable();
-            SqlCommand command = new SqlCommand( "SELECT Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name FROM IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ", connection);
-            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-            {
-                adapter.Fill(IssueTable);
-            }
-            return IssueTable;
+            SqlCommand command = new SqlCommand("UPDATE " + table + " SET " + values, connection);
+            command.ExecuteNonQuery();
         }
     }
 }

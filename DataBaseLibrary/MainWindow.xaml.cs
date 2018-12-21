@@ -251,5 +251,9 @@ namespace DataBaseLibrary
             AcceptBookWindow AcceptBookWindow = new AcceptBookWindow();
             AcceptBookWindow.Visibility = Visibility.Visible;
         }
+        public void DataGridUpdate()
+        {
+            IssueOfBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name, IsReturned, ActualReturnDate", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
+        }
     }
 }

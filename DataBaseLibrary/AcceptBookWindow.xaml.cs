@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
 
 namespace DataBaseLibrary
 {
@@ -21,6 +13,7 @@ namespace DataBaseLibrary
     public partial class AcceptBookWindow : Window
     {
         sqlclass SQLWorker = new sqlclass();
+        MainWindow update = new MainWindow();
         string connectionString;
         public AcceptBookWindow()
         {
@@ -35,19 +28,24 @@ namespace DataBaseLibrary
             var table = SQLWorker.Select("ReaderName", "Reader");
             ChooseNameComboBox.ItemsSource = table.DefaultView;
             ChooseNameComboBox.DisplayMemberPath = table.Columns[0].ToString();
-
-            
-            aNTON GONDON
         }
 
         private void ChooseNameComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
              string ComboBoxValue = ((System.Data.DataRowView)ChooseNameComboBox.SelectedItem).Row.ItemArray[0].ToString();
              string ComboBoxValueID = sqlclass.GetID(ComboBoxValue, "ReaderID", "Reader", "ReaderName", SQLWorker.connection);
-             var table = SQLWorker.Select("BookID", "IssueOfBooks WHERE ReaderID = '" + ComboBoxValueID + "'");
+             var table = SQLWorker.Select("Book.Name", "IssueOfBooks INNER JOIN Book ON Book.BookID = IssueOfBooks.BookID WHERE ReaderID = '" + ComboBoxValueID + "'");
             
              ChooseBookComboBox.ItemsSource = table.DefaultView;
              ChooseBookComboBox.DisplayMemberPath = table.Columns[0].ToString();
+        }
+
+        private void AcceptBookButton_Click(object sender, RoutedEventArgs e)
+        {
+            string ComboBoxValue = ((System.Data.DataRowView)ChooseNameComboBox.SelectedItem).Row.ItemArray[0].ToString();
+            string ComboBoxValueID = sqlclass.GetID(ComboBoxValue, "ReaderID", "Reader", "ReaderName", SQLWorker.connection);
+            SQLWorker.Update("IssueOfBooks", "IsReturned = '1', ActualReturnDate = '" + ActualReturnDatePicker.Text + "' WHERE ReaderID = '" + ComboBoxValueID + "'");
+            update.DataGridUpdate();
         }
     }
 }
