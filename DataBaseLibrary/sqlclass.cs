@@ -33,28 +33,18 @@ namespace DataBaseLibrary
             return LibraryTable;
         }
 
-        public static string GetID(string RowValue, string tableName, string rowName, SqlConnection connection)
+        public static string GetID(string RowValue, string selectedRowName, string tableName, string rowName, SqlConnection connection)
         {
-            DataSet GetIDValue = new DataSet();
+            DataTable GetIDValue = new DataTable();
             string collunID = " ";
             GetIDValue.Clear();
-            SqlCommand command = new SqlCommand("SELECT " + tableName + "ID FROM " + tableName + " WHERE " + rowName + " = '" + RowValue + "'", connection);
+            SqlCommand command = new SqlCommand("SELECT " + selectedRowName + " FROM " + tableName + " WHERE " + rowName + " = '" + RowValue + "'", connection);
             using (SqlDataAdapter adapter = new SqlDataAdapter(command))
             {
                 adapter.Fill(GetIDValue);
             }
-            collunID = GetIDValue.Tables[0].Rows[0][0].ToString();
+            collunID = GetIDValue.Rows[0][0].ToString();
             return collunID;
-        }
-
-        public DataTable RowValueByID(string rowSelect, string tableName, string row, string rowValue,  SqlConnection connection)
-        {
-            SqlCommand command = new SqlCommand("SELECT " + rowSelect + " FROM " + tableName + " WHERE " + row + " = '" + rowValue + "'", connection);
-            using (SqlDataAdapter adapter = new SqlDataAdapter(command))
-            {
-                adapter.Fill(rowValueByID);
-            }
-            return rowValueByID;
         }
 
 

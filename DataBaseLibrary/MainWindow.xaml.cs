@@ -40,6 +40,7 @@ namespace DataBaseLibrary
                     string authorGuid = Guid.NewGuid().ToString().Trim();
                     SQLWorker.Insert("'" + authorGuid + "', '" + AuthorTextBox.Text + "'", "Author");
                     authorValue = AuthorTextBox.Text;
+                    ComboBoxConnection("Author");
                 }
                 else
                 {
@@ -50,21 +51,20 @@ namespace DataBaseLibrary
                     string genreGuid = Guid.NewGuid().ToString().Trim();
                     SQLWorker.Insert("'" + genreGuid + "', '" + GenreTextBox.Text + "'", "Genre");
                     genreValue = GenreTextBox.Text;
+                    ComboBoxConnection("Genre");
                 }
                 else
                 {
                     genreValue = GenreComboBox.Text;
                 }
 
-                var GenreID = sqlclass.GetID(genreValue, "Genre", "Genre", SQLWorker.connection);
-                var AuthorID = sqlclass.GetID(authorValue, "Author", "Author", SQLWorker.connection);
+                var GenreID = sqlclass.GetID(genreValue, "GenreID", "Genre", "Genre", SQLWorker.connection);
+                var AuthorID = sqlclass.GetID(authorValue, "AuthorID", "Author", "Author", SQLWorker.connection);
 
 
 
                 SQLWorker.Insert("'" + bookID + "', '" + AuthorID + "', '" + GenreID + "', '" + BookNameTextBox.Text + "'", "Book");
                 MessageBox.Show("Data successfully saved", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                ComboBoxConnection("Author");
-                ComboBoxConnection("Genre");
                 ComboBoxConnection("Book");
             }
         }
@@ -77,10 +77,10 @@ namespace DataBaseLibrary
             }
             else
             {
-                var BookID = sqlclass.GetID(BookComboBox.Text, "Book", "Name", SQLWorker.connection);
-                var ReaderID = sqlclass.GetID(ReaderNameComboBox.Text, "Reader", "ReaderName", SQLWorker.connection);
+                var BookID = sqlclass.GetID(BookComboBox.Text, "BookID", "Book", "Name", SQLWorker.connection);
+                var ReaderID = sqlclass.GetID(ReaderNameComboBox.Text, "ReaderID", "Reader", "ReaderName", SQLWorker.connection);
                 string id = Guid.NewGuid().ToString().Trim();
-                SQLWorker.Insert("'" + id + "', '" + ReaderID + "', '" + DateOfIssueDatePicker.Text + "', '" + ReturnDAteDatePicker.Text + "', '" + BookID + "'", "IssueOfBooks");
+                SQLWorker.Insert("'" + id + "', '" + ReaderID + "', '" + DateOfIssueDatePicker.Text + "', '" + ReturnDAteDatePicker.Text + "', '" + BookID + "' , '" + "False' , NULL", "IssueOfBooks");
                 MessageBox.Show("Data successfully saved", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
@@ -112,11 +112,17 @@ namespace DataBaseLibrary
             ComboBoxConnection("Book");
             ComboBoxConnection("Reader");
 
+            var issueofbook = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name, IsReturned, ActualReturnDate", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ");
+
             ReaderTableGrid.ItemsSource = SQLWorker.Select("ReaderName, Adress, Email, PhoneNumber","Reader").DefaultView;
-            IssueOfBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
+
+            IssueOfBookDataGrid.ItemsSource = issueofbook.DefaultView;
+
             IssueBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
+
             AddBookDataGrid.ItemsSource = SQLWorker.Select("Name, Author.Author, Genre.Genre","Book INNER JOIN Author ON Book.AuthorID = Author.AuthorID INNER JOIN Genre ON Book.GenreID = Genre.GenreID").DefaultView;
 
+            BookIssuedLabel.Content = BookIssuedLabel.Content + Convert.ToString(issueofbook.Rows.Count);
         }
 
 
@@ -168,6 +174,7 @@ namespace DataBaseLibrary
             DateOfIssueDatePicker.Text = "";
             ReturnDAteDatePicker.Text = "";
             BookComboBox.Text = "";
+            IssueOfBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name, IsReturned, ActualReturnDate", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
         }
     
 
@@ -190,6 +197,7 @@ namespace DataBaseLibrary
         {
             IssueBookTable.Visibility = Visibility.Hidden;
             AddBook.Visibility = Visibility.Visible;
+
         }
 
         private void IssueBookMenu_Click(object sender, RoutedEventArgs e)
@@ -236,6 +244,12 @@ namespace DataBaseLibrary
                 AddOrChooseAuthor.ToolTip = "Add author";
             }
 
+        }
+
+        private void AcceptBookButton_Click(object sender, RoutedEventArgs e)
+        {
+            AcceptBookWindow AcceptBookWindow = new AcceptBookWindow();
+            AcceptBookWindow.Visibility = Visibility.Visible;
         }
     }
 }

@@ -9,7 +9,7 @@
 
     <Grid >
 
-        <Grid Name="IssueBookTable" Visibility="Hidden">
+        <Grid Name="IssueBookTable" Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="350"/>
@@ -25,18 +25,18 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.Row="0" Grid.Column="1" Content="Table - Issue of book" FontSize="25" FontFamily="Yu Gothic UI Semibold" HorizontalAlignment="Left" Width="250" />
-            <DataGrid Name="IssueOfBookDataGrid" Grid.Row="1" Grid.Column="1">
+            <DataGrid Name="IssueOfBookDataGrid" Grid.Row="1" Grid.Column="1" AutoGenerateColumns="True" IsReadOnly="True">
             </DataGrid>
 
             <Button Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" Width="100" Height="35" Content="Add book" FontSize="16" Click="AddBook_Click" />
 
             <Button Name="IssueButton" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Width="100" Height="35" Content="Issue Book" FontSize="16" Click="IssueBookMenu_Click" />
-            <Button Name="AcceptButton" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Width="100" Height="35" Margin="120,0,0,0" Content="Accept Book" FontSize="16" />
+            <Button Name="AcceptButton" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Width="100" Height="35" Margin="120,0,0,0" Content="Accept Book" FontSize="16" Click="AcceptBookButton_Click" />
             <Button Name="AddReaderButton" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Width="100" Height="35" Content="Add reader" FontSize="16" Click="AddReaderButton_Click" />
-            <Label Grid.Row="2" Grid.Column="1" Content="Books issued: " HorizontalAlignment="Left" FontSize="16" Width="110" Height="35" Margin="230,5,0,0" />
+            <Label Name="BookIssuedLabel" Grid.Row="2" Grid.Column="1" Content="Books issued: " HorizontalAlignment="Left" FontSize="16" Width="120" Height="35" Margin="230,5,0,0" />
 
         </Grid>
-        <Grid Name="IssueBook" Visibility="Visible" >
+        <Grid Name="IssueBook" Visibility="Hidden" >
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
@@ -73,7 +73,7 @@
 
                 <Button HorizontalAlignment="Left" Width="195" Height="30" Margin="7,20,0,0" Background="White" FontSize="22"  Content="Save" Click="SaveIssueBook_Click" />
             </WrapPanel>
-            
+
             <DataGrid Grid.Row="1" Grid.Column="2" Name="IssueBookDataGrid"/>
             <Button Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" Width="100" Height="35" Content="Back" FontSize="16" Click="IssueBookBackButton_Click" />
         </Grid>

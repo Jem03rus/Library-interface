@@ -1,0 +1,31 @@
+﻿<Window x:Class="DataBaseLibrary.AcceptBookWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DataBaseLibrary"
+        mc:Ignorable="d"
+        Title="AcceptBook" Height="230" Width="300" HorizontalAlignment="Center" VerticalAlignment="Center" Topmost="True" Loaded="Window_Loaded" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+        </Grid.ColumnDefinitions>
+        <Border BorderBrush="Black" BorderThickness="1" Grid.Column="1" Grid.Row="1"/>
+        <StackPanel Grid.Column="1" Grid.Row="1">
+            <Label Width="175" Height="25" HorizontalAlignment="Center" Content="Choose the name of the reader "/>
+            <ComboBox Name="ChooseNameComboBox"  Width="150" Height="20" HorizontalAlignment="Center" Margin="0,5,0,0" SelectionChanged="ChooseNameComboBox_SelectionChanged"/>
+            <Label Width="80" Height="25" HorizontalAlignment="Center" Content="Choose book" Margin="10,0,0,0"/>
+            <ComboBox Name="ChooseBookComboBox"  Width="150" Height="20" HorizontalAlignment="Center" Margin="0,5,0,0"/>
+            <Button  Width="150" Height="20" Background="White" Content="Accept" HorizontalAlignment="Center" Margin="0,10,0,0" />
+        </StackPanel>
+    </Grid>
+</Window>
+
