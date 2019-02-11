@@ -19,8 +19,8 @@ namespace DataBaseLibrary
         {
             SQLWorker = new sqlclass();
             InitializeComponent();
-            connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            SQLWorker.Connect(connectionString);
+            //connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            //SQLWorker.Connect(connectionString);
         }
 
         private void SaveBookButton_Click(object sender, RoutedEventArgs e)
@@ -107,22 +107,22 @@ namespace DataBaseLibrary
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            ComboBoxConnection("Author");
-            ComboBoxConnection("Genre");
-            ComboBoxConnection("Book");
-            ComboBoxConnection("Reader");
+            //ComboBoxConnection("Author");
+            //ComboBoxConnection("Genre");
+            //ComboBoxConnection("Book");
+            //ComboBoxConnection("Reader");
 
-            var issueofbook = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name, IsReturned, ActualReturnDate", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ");
+            //var issueofbook = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name, IsReturned, ActualReturnDate", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ");
 
-            ReaderTableGrid.ItemsSource = SQLWorker.Select("ReaderName, Adress, Email, PhoneNumber","Reader").DefaultView;
+            //ReaderTableGrid.ItemsSource = SQLWorker.Select("ReaderName, Adress, Email, PhoneNumber","Reader").DefaultView;
 
-            IssueOfBookDataGrid.ItemsSource = issueofbook.DefaultView;
+            //IssueOfBookDataGrid.ItemsSource = issueofbook.DefaultView;
 
-            IssueBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
+            //IssueBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
 
-            AddBookDataGrid.ItemsSource = SQLWorker.Select("Name, Author.Author, Genre.Genre","Book INNER JOIN Author ON Book.AuthorID = Author.AuthorID INNER JOIN Genre ON Book.GenreID = Genre.GenreID").DefaultView;
+            //AddBookDataGrid.ItemsSource = SQLWorker.Select("Name, Author.Author, Genre.Genre","Book INNER JOIN Author ON Book.AuthorID = Author.AuthorID INNER JOIN Genre ON Book.GenreID = Genre.GenreID").DefaultView;
 
-            BookIssuedLabel.Content = BookIssuedLabel.Content + Convert.ToString(issueofbook.Rows.Count);
+            //BookIssuedLabel.Content = BookIssuedLabel.Content + Convert.ToString(issueofbook.Rows.Count);
         }
 
 
@@ -174,7 +174,7 @@ namespace DataBaseLibrary
             DateOfIssueDatePicker.Text = "";
             ReturnDAteDatePicker.Text = "";
             BookComboBox.Text = "";
-            IssueOfBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name, IsReturned, ActualReturnDate", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
+            //IssueOfBookDataGrid.ItemsSource = SQLWorker.Select("Reader.ReaderName, Reader.Adress, Reader.PhoneNumber, DateOfIssue, ReturnDate, Book.Name, IsReturned, ActualReturnDate", "IssueOfBooks INNER JOIN Reader ON IssueOfBooks.ReaderID = Reader.ReaderID INNER JOIN Book ON IssueOfBooks.BookID = Book.BookID ").DefaultView;
         }
     
 

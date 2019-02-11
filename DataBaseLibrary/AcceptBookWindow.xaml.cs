@@ -18,16 +18,16 @@ namespace DataBaseLibrary
         public AcceptBookWindow()
         {
             InitializeComponent();
-            connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            SQLWorker.Connect(connectionString);
+            //connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            //SQLWorker.Connect(connectionString);
         }
 
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var table = SQLWorker.Select("ReaderName", "Reader");
-            ChooseNameComboBox.ItemsSource = table.DefaultView;
-            ChooseNameComboBox.DisplayMemberPath = table.Columns[0].ToString();
+            //var table = SQLWorker.Select("ReaderName", "Reader");
+            //ChooseNameComboBox.ItemsSource = table.DefaultView;
+            //ChooseNameComboBox.DisplayMemberPath = table.Columns[0].ToString();
         }
 
         private void ChooseNameComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -42,10 +42,18 @@ namespace DataBaseLibrary
 
         private void AcceptBookButton_Click(object sender, RoutedEventArgs e)
         {
-            string ComboBoxValue = ((System.Data.DataRowView)ChooseNameComboBox.SelectedItem).Row.ItemArray[0].ToString();
-            string ComboBoxValueID = sqlclass.GetID(ComboBoxValue, "ReaderID", "Reader", "ReaderName", SQLWorker.connection);
-            SQLWorker.Update("IssueOfBooks", "IsReturned = '1', ActualReturnDate = '" + ActualReturnDatePicker.Text + "' WHERE ReaderID = '" + ComboBoxValueID + "'");
-            update.DataGridUpdate();
+            if ((ChooseNameComboBox.Text == "") || (ChooseBookComboBox.Text == "") || (ActualReturnDatePicker.Text == ""))
+            {
+                MessageBox.Show("Incorrect input", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                string ComboBoxValue = ((System.Data.DataRowView)ChooseNameComboBox.SelectedItem).Row.ItemArray[0].ToString();
+                string ComboBoxValueID = sqlclass.GetID(ComboBoxValue, "ReaderID", "Reader", "ReaderName", SQLWorker.connection);
+                SQLWorker.Update("IssueOfBooks", "IsReturned = '1', ActualReturnDate = '" + ActualReturnDatePicker.Text + "' WHERE ReaderID = '" + ComboBoxValueID + "'");
+                update.DataGridUpdate();           
+            }
+
         }
     }
 }
